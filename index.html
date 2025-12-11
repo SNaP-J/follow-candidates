@@ -6,150 +6,110 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#0B1221">
-    
-    <title>SFEIR Board 2025</title>
     <link rel="icon" type="image/png" href="icon.png">
-<link rel="apple-touch-icon" href="icon.png">
+    <link rel="apple-touch-icon" href="icon.png">
+    
+    <title>SFEIR Board V4</title>
     <style>
-        /* --- STYLE SFEIR 2025 (DARK & MOBILE) --- */
+        /* --- STYLE DARK MOBILE --- */
         :root {
-            --bg-deep: #0B1221;       /* Fond principal très sombre */
-            --bg-card: #162032;       /* Fond des cartes */
+            --bg-deep: #0B1221;
+            --bg-card: #162032;
             --text-main: #FFFFFF;
             --text-muted: #8F9BB3;
-            --sfeir-pink: #FF0054;    /* Rose Néon */
-            --sfeir-blue: #4E89FF;    /* Bleu Électrique */
+            --sfeir-pink: #FF0054;
+            --sfeir-blue: #4E89FF;
             --success: #00E676;
             --danger: #FF3D00;
             --nav-height: 70px;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            margin: 0;
-            background-color: var(--bg-deep);
-            color: var(--text-main);
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden; /* Pas de scroll global, on scroll dans les zones */
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0; background-color: var(--bg-deep); color: var(--text-main);
+            height: 100vh; display: flex; flex-direction: column; overflow: hidden;
         }
 
-        /* --- LOGIN SCREEN --- */
+        /* LOGIN */
         #login-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--bg-deep);
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            z-index: 2000; padding: 20px; box-sizing: border-box;
+            background: var(--bg-deep); display: flex; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 2000; padding: 20px; box-sizing: border-box;
         }
-        .login-logo { font-size: 2rem; font-weight: 900; letter-spacing: -1px; margin-bottom: 40px; }
-        .login-input {
-            background: var(--bg-card); border: 1px solid #334; color: white;
-            padding: 15px; width: 100%; margin-bottom: 15px; border-radius: 12px; font-size: 1rem;
-        }
-        .btn-primary {
-            background: var(--sfeir-blue); color: white; border: none; padding: 15px;
-            width: 100%; border-radius: 12px; font-weight: bold; font-size: 1rem; margin-top: 10px; cursor: pointer;
-        }
-        .link-text { margin-top: 20px; color: var(--text-muted); font-size: 0.9rem; text-decoration: underline; }
+        .login-logo { font-size: 2rem; font-weight: 900; margin-bottom: 40px; }
+        .login-input { background: var(--bg-card); border: 1px solid #334; color: white; padding: 15px; width: 100%; margin-bottom: 15px; border-radius: 12px; font-size: 1rem; }
+        .btn-primary { background: var(--sfeir-blue); color: white; border: none; padding: 15px; width: 100%; border-radius: 12px; font-weight: bold; font-size: 1rem; margin-top: 10px; }
 
-        /* --- HEADER (Minimaliste) --- */
-        header {
-            padding: 15px 20px;
-            display: flex; justify-content: space-between; align-items: center;
-            background: rgba(11, 18, 33, 0.95);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid #222;
+        /* HEADER & NAV */
+        header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; background: rgba(11, 18, 33, 0.95); border-bottom: 1px solid #222; }
+        .header-title { font-weight: 800; font-size: 1.1rem; }
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; width: 100%; height: var(--nav-height);
+            background: #111; border-top: 1px solid #333; display: flex; justify-content: space-around;
+            align-items: center; z-index: 1000; padding-bottom: env(safe-area-inset-bottom);
         }
-        .header-title { font-weight: 800; font-size: 1.1rem; letter-spacing: 0.5px; }
-        .logout-icon { background: none; border: none; font-size: 1.2rem; cursor: pointer; }
+        .nav-item { background: none; border: none; color: #666; display: flex; flex-direction: column; align-items: center; font-size: 0.7rem; gap: 4px; width: 33%; }
+        .nav-icon { font-size: 1.5rem; }
+        .nav-item.active { color: var(--sfeir-pink); }
 
-        /* --- CONTENU PRINCIPAL --- */
-        #main-container {
-            flex: 1;
-            position: relative;
-            overflow: hidden;
-            padding-bottom: var(--nav-height); /* Espace pour la barre du bas */
-        }
-
-        .board-view {
-            display: none;
-            height: 100%;
-            overflow-y: auto; /* Scroll vertical */
-            padding: 15px;
-            box-sizing: border-box;
-            padding-bottom: 100px; /* Marge pour ne pas cacher le dernier élément */
-        }
-        .board-view.active-view { display: block; animation: fadeIn 0.3s ease; }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* --- COLONNES (Style Mobile : Liste verticale) --- */
+        /* CONTENU */
+        #main-container { flex: 1; position: relative; overflow: hidden; padding-bottom: var(--nav-height); }
+        .board-view { display: none; height: 100%; overflow-y: auto; padding: 15px; box-sizing: border-box; padding-bottom: 100px; }
+        .board-view.active-view { display: block; }
         .column-section { margin-bottom: 25px; }
-        
-        .column-header {
-            font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px;
-            color: var(--text-muted); margin-bottom: 10px; display: flex; justify-content: space-between;
-        }
-        .badge { background: #333; color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; }
+        .column-header { font-size: 0.9rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px; display: flex; justify-content: space-between; }
+        .badge { background: #333; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; }
 
-        /* --- CARTES --- */
+        /* CARTES (Version épurée) */
         .card {
-            background: var(--bg-card);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 12px;
-            position: relative;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-            border: 1px solid rgba(255,255,255,0.05);
+            background: var(--bg-card); border-radius: 12px; padding: 16px; margin-bottom: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05);
+            /* NOUVEAU : Indique que c'est cliquable */
+            cursor: pointer; transition: background 0.2s;
         }
+        .card:active { background: #2a3a5a; } /* Effet au clic */
         .card h3 { margin: 0 0 5px 0; font-size: 1rem; color: white; }
         .card p { margin: 0; color: var(--text-muted); font-size: 0.9rem; }
-        
-        /* Actions Cartes (Boutons tactiles) */
-        .card-actions {
-            margin-top: 12px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.1);
-            display: flex; justify-content: space-between;
-        }
-        .action-btn {
-            background: transparent; border: 1px solid rgba(255,255,255,0.2); color: white;
-            border-radius: 6px; padding: 5px 10px; font-size: 0.8rem; cursor: pointer;
-        }
-        .btn-move { color: var(--sfeir-blue); border-color: var(--sfeir-blue); }
-        .btn-delete { color: var(--danger); border-color: transparent; }
 
-        /* --- BOUTON AJOUT FLOTTANT (FAB) --- */
-        .fab-add {
-            display: none; /* Caché par défaut, affiché par JS */
-            width: 100%;
-            background: transparent; border: 2px dashed rgba(255,255,255,0.2);
-            color: var(--text-muted); padding: 12px; border-radius: 12px;
-            margin-top: 5px; font-weight: bold; cursor: pointer;
-        }
-        
-        /* Formulaire d'ajout inline */
+        /* FORMULAIRES D'AJOUT */
+        .fab-add { width: 100%; background: transparent; border: 2px dashed rgba(255,255,255,0.2); color: var(--text-muted); padding: 12px; border-radius: 12px; margin-top: 5px; font-weight: bold; }
         .add-form { display: none; background: #1A273D; padding: 15px; border-radius: 12px; margin-top: 10px; }
         .add-form input { width: 100%; padding: 10px; margin-bottom: 8px; border-radius: 8px; border: none; background: #0B1221; color: white; box-sizing: border-box;}
         .form-btns { display: flex; gap: 10px; }
         .btn-confirm { flex:1; background: var(--success); color: #000; border:none; padding:10px; border-radius:8px; font-weight:bold; }
         .btn-cancel { flex:1; background: #333; color: white; border:none; padding:10px; border-radius:8px; }
 
-        /* --- NAVIGATION BAS (MOBILE TABS) --- */
-        .bottom-nav {
-            position: fixed; bottom: 0; left: 0; width: 100%; height: var(--nav-height);
-            background: #111; border-top: 1px solid #333;
-            display: flex; justify-content: space-around; align-items: center;
-            z-index: 1000; padding-bottom: env(safe-area-inset-bottom); /* Pour iPhone X+ */
+        /* --- NOUVEAU : LA MODALE (POP-UP) --- */
+        .modal-overlay {
+            display: none; /* Caché par défaut */
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8); /* Fond semi-transparent noir */
+            z-index: 3000;
+            justify-content: center; align-items: center;
+            animation: fadeIn 0.2s ease-out;
         }
-        .nav-item {
-            background: none; border: none; color: #666;
-            display: flex; flex-direction: column; align-items: center;
-            font-size: 0.7rem; gap: 4px; cursor: pointer; width: 33%;
+        .modal-box {
+            background: var(--bg-card); width: 90%; max-width: 400px;
+            padding: 25px; border-radius: 16px; text-align: center;
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            animation: slideUp 0.2s ease-out;
         }
-        .nav-icon { font-size: 1.5rem; margin-bottom: 2px; }
-        .nav-item.active { color: var(--sfeir-pink); }
+        .modal-box h3 { margin: 0 0 10px 0; font-size: 1.4rem; }
+        .modal-box p { color: var(--text-muted); margin-bottom: 25px; }
         
-        /* Indicateur de chargement */
+        .modal-actions-row {
+            display: flex; gap: 10px; margin-bottom: 15px;
+        }
+        .modal-btn {
+            flex: 1; padding: 12px; border-radius: 8px; border: none; font-weight: bold; font-size: 0.9rem; cursor: pointer;
+        }
+        .btn-move-modal { background: var(--sfeir-blue); color: white; }
+        .btn-delete-modal { background: transparent; border: 2px solid var(--danger); color: var(--danger); }
+        .btn-close-modal { background: #333; color: white; width: 100%; padding: 12px; border-radius: 8px; border: none; margin-top: 10px;}
+
+        @keyframes fadeIn { from {opacity:0} to {opacity:1} }
+        @keyframes slideUp { from {transform: translateY(50px)} to {transform: translateY(0)} }
         #loader { display:none; position:fixed; top:70px; right:20px; color:var(--sfeir-blue); font-size:0.8rem; font-weight:bold;}
     </style>
 </head>
@@ -160,99 +120,85 @@
         <input type="email" id="email" class="login-input" placeholder="Email SFEIR">
         <input type="password" id="password" class="login-input" placeholder="Mot de passe">
         <button class="btn-primary" onclick="login()">Se connecter</button>
-        <p class="link-text" onclick="signup()">Première connexion ? Créer compte</p>
+        <p style="color:#888; margin-top:20px; text-decoration:underline;" onclick="signup()">Première connexion ? Créer compte</p>
         <p id="login-error" style="color:red; display:none; margin-top:10px;"></p>
     </div>
 
     <header id="main-header" style="display:none;">
         <div class="header-title">SFEIR <span style="color:var(--sfeir-blue)">Recrutement</span></div>
         <div id="loader">Sync...</div>
-        <button class="logout-icon" onclick="logout()">🚪</button>
+        <button style="background:none;border:none;font-size:1.2rem;" onclick="logout()">🚪</button>
     </header>
 
     <div id="main-container" style="display:none;">
-        
         <div id="view-screening" class="board-view active-view">
             <div class="column-section" id="col-screen_visio">
                 <div class="column-header">📞 Visio / Tel <span class="badge" id="count-screen_visio">0</span></div>
-                <div class="card-list"></div> <button class="fab-add" onclick="toggleForm('screen_visio')">+ Ajouter Candidat</button>
-                <div class="add-form" id="form-screen_visio">
-                    <input class="in-name" placeholder="Nom Prénom"><input class="in-role" placeholder="Poste">
-                    <div class="form-btns"><button class="btn-confirm" onclick="addCard('screen_visio')">OK</button><button class="btn-cancel" onclick="toggleForm('screen_visio')">Annuler</button></div>
-                </div>
+                <div class="card-list"></div>
+                <button class="fab-add" onclick="toggleForm('screen_visio')">+ Ajouter</button>
+                <div class="add-form" id="form-screen_visio"><input class="in-name" placeholder="Nom"><input class="in-role" placeholder="Poste"><div class="form-btns"><button class="btn-confirm" onclick="addCard('screen_visio')">OK</button><button class="btn-cancel" onclick="toggleForm('screen_visio')">X</button></div></div>
             </div>
             <div class="column-section" id="col-screen_org">
                 <div class="column-header">📅 Org. Tests <span class="badge" id="count-screen_org">0</span></div>
                 <div class="card-list"></div>
-                <button class="fab-add" onclick="toggleForm('screen_org')">+ Ajouter Candidat</button>
-                <div class="add-form" id="form-screen_org">
-                    <input class="in-name" placeholder="Nom Prénom"><input class="in-role" placeholder="Poste">
-                    <div class="form-btns"><button class="btn-confirm" onclick="addCard('screen_org')">OK</button><button class="btn-cancel" onclick="toggleForm('screen_org')">Annuler</button></div>
-                </div>
+                <button class="fab-add" onclick="toggleForm('screen_org')">+ Ajouter</button>
+                <div class="add-form" id="form-screen_org"><input class="in-name" placeholder="Nom"><input class="in-role" placeholder="Poste"><div class="form-btns"><button class="btn-confirm" onclick="addCard('screen_org')">OK</button><button class="btn-cancel" onclick="toggleForm('screen_org')">X</button></div></div>
             </div>
         </div>
-
         <div id="view-playoffs" class="board-view">
-            <div class="column-section" id="col-play_todo">
+             <div class="column-section" id="col-play_todo">
                 <div class="column-header">⏳ À venir <span class="badge" id="count-play_todo">0</span></div>
                 <div class="card-list"></div>
                 <button class="fab-add" onclick="toggleForm('play_todo')">+ Ajouter</button>
-                <div class="add-form" id="form-play_todo"><input class="in-name" placeholder="Nom"><input class="in-role" placeholder="Poste"><div class="form-btns"><button class="btn-confirm" onclick="addCard('play_todo')">OK</button><button class="btn-cancel" onclick="toggleForm('play_todo')">Annuler</button></div></div>
+                <div class="add-form" id="form-play_todo"><input class="in-name" placeholder="Nom"><input class="in-role" placeholder="Poste"><div class="form-btns"><button class="btn-confirm" onclick="addCard('play_todo')">OK</button><button class="btn-cancel" onclick="toggleForm('play_todo')">X</button></div></div>
             </div>
             <div class="column-section" id="col-play_go">
-                <div class="column-header" style="color:var(--success)">✅ GO Tech <span class="badge" id="count-play_go">0</span></div>
-                <div class="card-list"></div>
+                <div class="column-header" style="color:var(--success)">✅ GO Tech <span class="badge" id="count-play_go">0</span></div><div class="card-list"></div>
             </div>
             <div class="column-section" id="col-play_biz">
-                <div class="column-header">🤝 Échange Commerce <span class="badge" id="count-play_biz">0</span></div>
-                <div class="card-list"></div>
+                <div class="column-header">🤝 Échange Commerce <span class="badge" id="count-play_biz">0</span></div><div class="card-list"></div>
             </div>
             <div class="column-section" id="col-play_nogo">
-                <div class="column-header" style="color:var(--danger)">❌ NO GO <span class="badge" id="count-play_nogo">0</span></div>
-                <div class="card-list"></div>
+                <div class="column-header" style="color:var(--danger)">❌ NO GO <span class="badge" id="count-play_nogo">0</span></div><div class="card-list"></div>
             </div>
         </div>
-
         <div id="view-offer" class="board-view">
-            <div class="column-section" id="col-off_remun">
+             <div class="column-section" id="col-off_remun">
                 <div class="column-header">💰 Confirmer Rémun. <span class="badge" id="count-off_remun">0</span></div>
                 <div class="card-list"></div>
                 <button class="fab-add" onclick="toggleForm('off_remun')">+ Ajouter</button>
-                <div class="add-form" id="form-off_remun"><input class="in-name" placeholder="Nom"><input class="in-role" placeholder="Salaire"><div class="form-btns"><button class="btn-confirm" onclick="addCard('off_remun')">OK</button><button class="btn-cancel" onclick="toggleForm('off_remun')">Annuler</button></div></div>
+                <div class="add-form" id="form-off_remun"><input class="in-name" placeholder="Nom"><input class="in-role" placeholder="Salaire"><div class="form-btns"><button class="btn-confirm" onclick="addCard('off_remun')">OK</button><button class="btn-cancel" onclick="toggleForm('off_remun')">X</button></div></div>
             </div>
             <div class="column-section" id="col-off_todo">
-                <div class="column-header">🏗️ À Organiser <span class="badge" id="count-off_todo">0</span></div>
-                <div class="card-list"></div>
+                <div class="column-header">🏗️ À Organiser <span class="badge" id="count-off_todo">0</span></div><div class="card-list"></div>
             </div>
             <div class="column-section" id="col-off_pending">
-                <div class="column-header" style="color:var(--sfeir-pink)">✍️ Signature <span class="badge" id="count-off_pending">0</span></div>
-                <div class="card-list"></div>
+                <div class="column-header" style="color:var(--sfeir-pink)">✍️ Signature <span class="badge" id="count-off_pending">0</span></div><div class="card-list"></div>
             </div>
         </div>
-
     </div>
 
     <nav class="bottom-nav" id="bottom-nav" style="display:none;">
-        <button class="nav-item active" onclick="switchTab('screening', this)">
-            <span class="nav-icon">👥</span>
-            <span>Screening</span>
-        </button>
-        <button class="nav-item" onclick="switchTab('playoffs', this)">
-            <span class="nav-icon">⚔️</span>
-            <span>PlayOffs</span>
-        </button>
-        <button class="nav-item" onclick="switchTab('offer', this)">
-            <span class="nav-icon">📄</span>
-            <span>Offre</span>
-        </button>
+        <button class="nav-item active" onclick="switchTab('screening', this)"><span class="nav-icon">👥</span><span>Screening</span></button>
+        <button class="nav-item" onclick="switchTab('playoffs', this)"><span class="nav-icon">⚔️</span><span>PlayOffs</span></button>
+        <button class="nav-item" onclick="switchTab('offer', this)"><span class="nav-icon">📄</span><span>Offre</span></button>
     </nav>
+
+    <div id="card-modal" class="modal-overlay" onclick="closeModal()"> <div class="modal-box" onclick="event.stopPropagation()"> <h3 id="modal-name">Nom du candidat</h3>
+            <p id="modal-role">Poste</p>
+            
+            <div id="modal-actions-container" class="modal-actions-row"></div>
+            
+            <button class="btn-close-modal" onclick="closeModal()">Fermer</button>
+        </div>
+    </div>
+
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-        const firebaseConfig = {
+       const firebaseConfig = {
   apiKey: "AIzaSyDNm0Zl27uUmpr2giBPeY0HldAshHO1vcM",
   authDomain: "follow-candidats.firebaseapp.com",
   projectId: "follow-candidats",
@@ -261,18 +207,13 @@
   appId: "1:943976032068:web:3619ddbc2495cd7e4dd911",
   measurementId: "G-94C0YR0B3R"
 };
-
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // Variables globales
-        window.auth = auth;
-        window.db = db;
-        window.signIn = signInWithEmailAndPassword;
-        window.createUser = createUserWithEmailAndPassword;
-        window.signOutFirebase = signOut;
-        window.boardDocRef = doc(db, "recrutement", "process_v2"); // On garde les mêmes données que v2
+        window.auth = auth; window.db = db;
+        window.signIn = signInWithEmailAndPassword; window.createUser = createUserWithEmailAndPassword; window.signOutFirebase = signOut;
+        window.boardDocRef = doc(db, "recrutement", "process_v2");
         window.setDoc = setDoc;
 
         onAuthStateChanged(auth, (user) => {
@@ -299,143 +240,114 @@
     </script>
 
     <script>
-        // Définition de l'ordre des colonnes pour les mouvements "Suivant/Précédent"
         const COL_ORDER = [
-            'screen_visio', 'screen_org', // Page 1
-            'play_todo', 'play_go', 'play_biz', 'play_nogo', // Page 2
-            'off_remun', 'off_todo', 'off_pending' // Page 3
+            'screen_visio', 'screen_org',
+            'play_todo', 'play_go', 'play_biz', 'play_nogo',
+            'off_remun', 'off_todo', 'off_pending'
         ];
-        
-        let boardData = {};
-        COL_ORDER.forEach(c => boardData[c] = []);
+        let boardData = {}; COL_ORDER.forEach(c => boardData[c] = []);
 
-        // --- AUTH ---
-        function login() {
-            const e = document.getElementById('email').value;
-            const p = document.getElementById('password').value;
-            window.signIn(window.auth, e, p).catch(err => document.getElementById('login-error').innerText = err.message);
-        }
-        function signup() {
-            const e = document.getElementById('email').value;
-            const p = document.getElementById('password').value;
-            window.createUser(window.auth, e, p).then(()=>alert("Créé!")).catch(err=>alert(err.message));
-        }
+        // --- AUTH & NAV ---
+        function login() { const e=document.getElementById('email').value;const p=document.getElementById('password').value;window.signIn(window.auth,e,p).catch(err=>document.getElementById('login-error').innerText=err.message);}
+        function signup() { const e=document.getElementById('email').value;const p=document.getElementById('password').value;window.createUser(window.auth,e,p).then(()=>alert("Créé!")).catch(err=>alert(err.message));}
         function logout() { window.signOutFirebase(window.auth); }
-
-        // --- NAVIGATION ---
-        function switchTab(viewId, btn) {
-            document.querySelectorAll('.board-view').forEach(el => el.classList.remove('active-view'));
-            document.getElementById(`view-${viewId}`).classList.add('active-view');
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            if(btn) btn.classList.add('active');
-        }
+        function switchTab(v,b) { document.querySelectorAll('.board-view').forEach(e=>e.classList.remove('active-view'));document.getElementById(`view-${v}`).classList.add('active-view');document.querySelectorAll('.nav-item').forEach(e=>e.classList.remove('active'));if(b)b.classList.add('active');}
 
         // --- DATA ---
-        window.updateBoardFromCloud = function(newData) {
-            boardData = { ...boardData, ...newData };
-            renderBoard();
-        }
+        window.updateBoardFromCloud = function(newData) { boardData = { ...boardData, ...newData }; renderBoard(); }
+        function saveDataToCloud() { document.getElementById('loader').style.display='block'; window.setDoc(window.boardDocRef, boardData).then(()=>setTimeout(()=>document.getElementById('loader').style.display='none',500)); }
 
-        function saveDataToCloud() {
-            document.getElementById('loader').style.display = 'block';
-            window.setDoc(window.boardDocRef, boardData)
-                .then(() => setTimeout(() => document.getElementById('loader').style.display = 'none', 500));
-        }
-
-        // --- RENDER ---
+        // --- RENDER (Modifié pour le clic) ---
         function renderBoard() {
             COL_ORDER.forEach(colId => {
                 const colSection = document.getElementById(`col-${colId}`);
                 if(!colSection) return;
-                
                 const listContainer = colSection.querySelector('.card-list');
-                const badge = document.getElementById(`count-${colId}`);
-                
+                document.getElementById(`count-${colId}`).innerText = (boardData[colId]||[]).length;
                 listContainer.innerHTML = '';
-                const items = boardData[colId] || [];
-                badge.innerText = items.length;
 
-                // Afficher le bouton ajout seulement pour certaines colonnes
-                const fab = colSection.querySelector('.fab-add');
-                if(fab) fab.style.display = 'block';
-
-                items.forEach((candidate, index) => {
+                (boardData[colId]||[]).forEach((candidate, index) => {
                     const card = document.createElement('div');
                     card.className = 'card';
+                    // AU CLIC : On ouvre la modale avec les infos du candidat
+                    card.onclick = () => openModal(colId, index);
                     card.innerHTML = `
                         <h3>${candidate.name}</h3>
                         <p>${candidate.role}</p>
-                        <div class="card-actions">
-                            ${getPrevBtn(colId, index)}
-                            <button class="action-btn btn-delete" onclick="deleteCard('${colId}', ${index})">Suppr.</button>
-                            ${getNextBtn(colId, index)}
-                        </div>
-                    `;
+                        `;
                     listContainer.appendChild(card);
                 });
             });
         }
 
-        // Helpers pour générer les boutons Suivant/Précédent
-        function getNextBtn(colId, index) {
-            const currentPos = COL_ORDER.indexOf(colId);
-            if(currentPos < COL_ORDER.length - 1) {
-                const nextCol = COL_ORDER[currentPos + 1];
-                return `<button class="action-btn btn-move" onclick="moveCard('${colId}', '${nextCol}', ${index})">Suivant ▶</button>`;
-            }
-            return '<span></span>';
-        }
-        function getPrevBtn(colId, index) {
+        // --- GESTION DE LA MODALE (Nouveau) ---
+        let currentModalCandidate = null; // Pour stocker qui on est en train de modifier
+
+        function openModal(colId, index) {
+            const candidate = boardData[colId][index];
+            currentModalCandidate = { colId, index }; // On garde en mémoire
+
+            // Remplir les infos
+            document.getElementById('modal-name').innerText = candidate.name;
+            document.getElementById('modal-role').innerText = candidate.role;
+
+            // Générer les boutons dynamiquement
+            const actionsContainer = document.getElementById('modal-actions-container');
+            actionsContainer.innerHTML = ''; // On vide
+
+            // Bouton Précédent ?
             const currentPos = COL_ORDER.indexOf(colId);
             if(currentPos > 0) {
                 const prevCol = COL_ORDER[currentPos - 1];
-                return `<button class="action-btn btn-move" onclick="moveCard('${colId}', '${prevCol}', ${index})">◀ Retour</button>`;
+                actionsContainer.innerHTML += `<button class="modal-btn btn-move-modal" onclick="moveCardFromModal('${prevCol}')">◀ Reculer</button>`;
             }
-            return '<span></span>';
-        }
 
-        // --- ACTIONS ---
-        function toggleForm(colId) {
-            const form = document.getElementById(`form-${colId}`);
-            form.style.display = (form.style.display === 'block') ? 'none' : 'block';
-        }
+            // Bouton Supprimer
+            actionsContainer.innerHTML += `<button class="modal-btn btn-delete-modal" onclick="deleteCardFromModal()">Supprimer</button>`;
 
-        function addCard(colId) {
-            const form = document.getElementById(`form-${colId}`);
-            const name = form.querySelector('.in-name').value;
-            const role = form.querySelector('.in-role').value;
-            if(!name) return;
-
-            boardData[colId].push({ name, role });
-            form.querySelector('.in-name').value = ''; 
-            form.querySelector('.in-role').value = '';
-            toggleForm(colId);
-            saveDataToCloud();
-        }
-
-        function deleteCard(colId, index) {
-            if(confirm("Supprimer ce candidat ?")) {
-                boardData[colId].splice(index, 1);
-                saveDataToCloud();
+            // Bouton Suivant ?
+            if(currentPos < COL_ORDER.length - 1) {
+                const nextCol = COL_ORDER[currentPos + 1];
+                actionsContainer.innerHTML += `<button class="modal-btn btn-move-modal" onclick="moveCardFromModal('${nextCol}')">Avancer ▶</button>`;
             }
+
+            // Afficher la modale
+            document.getElementById('card-modal').style.display = 'flex';
         }
 
-        function moveCard(fromCol, toCol, index) {
-            const candidate = boardData[fromCol][index];
-            boardData[fromCol].splice(index, 1);
-            boardData[toCol].push(candidate);
-            saveDataToCloud();
+        function closeModal() {
+            document.getElementById('card-modal').style.display = 'none';
+            currentModalCandidate = null;
+        }
+
+        // --- ACTIONS DEPUIS LA MODALE ---
+        function moveCardFromModal(targetColId) {
+            if(!currentModalCandidate) return;
+            const { colId, index } = currentModalCandidate;
             
-            // Si on change de page (ex: Screening -> Playoff), on change l'onglet automatiquement
-            checkTabSwitch(toCol);
+            // Déplacement
+            const candidate = boardData[colId][index];
+            boardData[colId].splice(index, 1);
+            boardData[targetColId].push(candidate);
+            
+            saveDataToCloud();
+            closeModal(); // On ferme la pop-up
+            checkTabSwitch(targetColId); // On change d'onglet si besoin
         }
 
-        function checkTabSwitch(newCol) {
-            if(newCol.startsWith('screen')) switchTab('screening', document.querySelectorAll('.nav-item')[0]);
-            else if(newCol.startsWith('play')) switchTab('playoffs', document.querySelectorAll('.nav-item')[1]);
-            else if(newCol.startsWith('off')) switchTab('offer', document.querySelectorAll('.nav-item')[2]);
+        function deleteCardFromModal() {
+            if(!currentModalCandidate || !confirm("Supprimer définitivement ?")) return;
+            const { colId, index } = currentModalCandidate;
+            boardData[colId].splice(index, 1);
+            saveDataToCloud();
+            closeModal();
         }
 
+
+        // --- ACTIONS CLASSIQUES (Ajout) ---
+        function toggleForm(id) { const f=document.getElementById(`form-${id}`);f.style.display=(f.style.display==='block')?'none':'block'; }
+        function addCard(c) { const f=document.getElementById(`form-${c}`),n=f.querySelector('.in-name').value,r=f.querySelector('.in-role').value;if(!n)return;boardData[c].push({name:n,role:r});f.querySelector('.in-name').value='';f.querySelector('.in-role').value='';toggleForm(c);saveDataToCloud();}
+        function checkTabSwitch(nc) { if(nc.startsWith('screen'))switchTab('screening',document.querySelectorAll('.nav-item')[0]);else if(nc.startsWith('play'))switchTab('playoffs',document.querySelectorAll('.nav-item')[1]);else if(nc.startsWith('off'))switchTab('offer',document.querySelectorAll('.nav-item')[2]);}
     </script>
 </body>
 </html>
