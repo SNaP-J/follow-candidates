@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SFEIR Board - Cloud Edition</title>
+    <style>
+        /* --- STYLE (CSS) - Identique à avant --- */
+        :root {
+            --sfeir-blue: #12263A;
+            --sfeir-pink: #D60057;
+            --bg-light: #F4F5F7;
+            --card-bg: #FFFFFF;
+        }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background-color: var(--sfeir-blue); color: #333; height: 100vh; display: flex; flex-direction: column; }
+        header { background-color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        h1 { margin: 0; color: var(--sfeir-blue); font-size: 1.5rem; }
+        .logo-text { font-weight: 800; }
+        .logout-btn { background: var(--sfeir-pink); color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; }
+        
+        #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--sfeir-blue); display: flex; justify-content: center; align-items: center; z-index: 1000; }
+        .login-box { background: white; padding: 40px; border-radius: 8px; text-align: center; width: 300px; }
+        .login-box input { display: block; width: 100%; margin: 10px 0; padding: 10px; box-sizing: border-box; }
+        .login-btn { background: var(--sfeir-pink); color: white; border: none; padding: 10px; width: 100%; cursor: pointer; font-weight: bold; }
+        .error-msg { color: red; font-size: 0.9em; margin-top: 10px; display: none; }
+
+        #app-board { display: none; flex: 1; padding: 20px; overflow-x: auto; align-items: flex-start; gap: 20px; }
+        .column { background-color: var(--bg-light); min-width: 300px; width: 300px; border-radius: 6px; padding: 10px; display: flex; flex-direction: column; max-height: 85vh; }
+        .column-header { font-weight: bold; color: var(--sfeir-blue); margin-bottom: 10px; padding-left: 5px; display: flex; justify-content: space-between; align-items: center; }
+        .column-count { background: #ddd; border-radius: 12px; padding: 2px 8px; font-size: 0.8em; }
+        .task-list { flex: 1; min-height: 100px; overflow-y: auto; }
+        
+        .card { background: var(--card-bg); padding: 15px; margin-bottom: 10px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); cursor: grab; border-left: 4px solid var(--sfeir-pink); position: relative; }
+        .card:active { cursor: grabbing; }
+        .card h3 { margin: 0 0 5px 0; font-size: 1rem; }
+        .card p { margin: 0; color: #666; font-size: 0.9rem; }
+        .delete-btn { position: absolute; top: 5px; right: 5px; background: transparent; border: none; color: #999; cursor: pointer; font-size: 1.2rem; }
+        .delete-btn:hover { color: red; }
+
+        .add-form { margin-top: 10px; background: #e2e4e6; padding: 10px; border-radius: 4px; }
+        .add-form input { width: 95%; padding: 8px; margin-bottom: 5px; border: 1px solid #ccc; border-radius: 3px; }
+        .add-btn { background: var(--sfeir-blue); color: white; border: none; padding: 6px 12px; cursor: pointer; width: 100%; }
+        
+        /* Petit indicateur de chargement */
+        #loader { display:none; color:white; position:fixed; bottom:10px; right:10px; font-size:0.8em;}
+    </style>
+</head>
+<body>
+
+    <div id="login-screen">
+        <div class="login-box">
+            <h2 style="color:var(--sfeir-blue)">SFEIR <span style="color:var(--sfeir-pink)">Board</span></h2>
+            <p>Accès Recruteur (Cloud)</p>
+            <input type="email" id="email" placeholder="Email SFEIR">
+            <input type="password" id="password" placeholder="Mot de passe">
+            <button class="login-btn" onclick="login()">Se connecter</button>
+            <p style="font-size: 0.8em; margin-top:10px; cursor:pointer; color:#888;" onclick="signup()">Première fois ? Créer compte</p>
+            <div id="login-error" class="error-msg">Erreur de connexion</div>
+        </div>
+    </div>
+
+    <header id="main-header" style="display:none;">
+        <h1><span class="logo-text">SFEIR</span> Recrutement</h1>
+        <div>
+            <span id="user-display" style="font-size:0.8em; margin-right:10px;"></span>
+            <button class="logout-btn" onclick="logout()">Déconnexion</button>
+        </div>
+    </header>
+
+    <div id="app-board">
+        <div class="column">
+            <div class="column-header">Screening RH <span class="column-count" id="count-screening">0</span></div>
+            <div class="task-list" id="screening" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+            <div class="add-form">
+                <input type="text" id="input-screening-name" placeholder="Nom du candidat">
+                <input type="text" id="input-screening-role" placeholder="Poste">
+                <button class="add-btn" onclick="addCard('screening')">+ Ajouter</button>
+            </div>
+        </div>
+        <div class="column">
+            <div class="column-header">PlayOffs (Tech) <span class="column-count" id="count-playoffs">0</span></div>
+            <div class="task-list" id="playoffs" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+        </div>
+        <div class="column">
+            <div class="column-header">Offre Direction <span class="column-count" id="count-offer">0</span></div>
+            <div class="task-list" id="offer" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+        </div>
+    </div>
+    <div id="loader">Sauvegarde...</div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } 
+        from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        
+        // NOUVEAU : Import de Firestore
+        import { getFirestore, doc, onSnapshot, setDoc } 
+        from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // --- ⬇️ ZONE À MODIFIER PAR L'UTILISATEUR ⬇️ ---
+        const firebaseConfig = {
+            // COLLE TA CONFIG ICI (API Key, AuthDomain, ProjectId, etc.)
+            
+        };
+        // --- ⬆️ FIN DE LA ZONE À MODIFIER ⬆️ ---
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app); // Initialisation de la BDD
+
+        // On rend les fonctions accessibles globalement
+        window.auth = auth;
+        window.db = db;
+        window.signIn = signInWithEmailAndPassword;
+        window.createUser = createUserWithEmailAndPassword;
+        window.signOutFirebase = signOut;
+        
+        // Référence au document unique qui contient tout le tableau
+        // On l'appelle "main-board" dans la collection "recrutement"
+        window.boardDocRef = doc(db, "recrutement", "main-board");
+        window.setDoc = setDoc;
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('app-board').style.display = 'flex';
+                document.getElementById('main-header').style.display = 'flex';
+                document.getElementById('user-display').innerText = user.email;
+                
+                // NOUVEAU : Écoute en temps réel de la base de données
+                startRealtimeListener();
+            } else {
+                document.getElementById('login-screen').style.display = 'flex';
+                document.getElementById('app-board').style.display = 'none';
+                document.getElementById('main-header').style.display = 'none';
+            }
+        });
+
+        function startRealtimeListener() {
+            // Cette fonction s'active à chaque changement dans le Cloud
+            onSnapshot(window.boardDocRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    // Si des données existent, on met à jour l'affichage
+                    window.updateBoardFromCloud(docSnap.data());
+                } else {
+                    // Si c'est vide (première fois), on crée la structure
+                    saveDataToCloud(); 
+                }
+            });
+        }
+    </script>
+
+    <script>
+        /* LOGIQUE JS */
+        
+        // Structure de données locale (tampon)
+        let boardData = { screening: [], playoffs: [], offer: [] };
+        
+        // --- AUTHENTIFICATION ---
+        function login() {
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('password').value;
+            window.signIn(window.auth, email, pass).catch((e) => showError(e.message));
+        }
+
+        function signup() {
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('password').value;
+            if(pass.length < 6) { showError("Mdp trop court"); return; }
+            window.createUser(window.auth, email, pass)
+                .then(() => alert("Compte créé !"))
+                .catch((e) => showError(e.message));
+        }
+
+        function logout() { window.signOutFirebase(window.auth); }
+        function showError(msg) { document.getElementById('login-error').innerText = msg; document.getElementById('login-error').style.display='block'; }
+
+        // --- GESTION DES DONNÉES CLOUD ---
+        
+        // Appelé automatiquement quand le Cloud envoie des nouvelles données
+        window.updateBoardFromCloud = function(newData) {
+            boardData = newData; // On met à jour notre variable locale
+            renderBoard();       // On redessine l'écran
+        }
+
+        // Appelé quand NOUS faisons une modif, pour l'envoyer au Cloud
+        function saveDataToCloud() {
+            document.getElementById('loader').style.display = 'block';
+            // On écrase le document dans le Cloud avec nos nouvelles données
+            window.setDoc(window.boardDocRef, boardData)
+                .then(() => {
+                     document.getElementById('loader').style.display = 'none';
+                })
+                .catch((e) => console.error("Erreur sauvegarde:", e));
+        }
+
+        // --- AFFICHAGE (Rien ne change ici ou presque) ---
+        function renderBoard() {
+            ['screening', 'playoffs', 'offer'].forEach(colId => {
+                const container = document.getElementById(colId);
+                container.innerHTML = ''; 
+                
+                // Sécurité : si la colonne n'existe pas dans les données reçues
+                const items = boardData[colId] || []; 
+
+                items.forEach((candidate, index) => {
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.draggable = true;
+                    card.id = `card-${colId}-${index}`;
+                    card.innerHTML = `
+                        <h3>${candidate.name}</h3>
+                        <p>${candidate.role}</p>
+                        <button class="delete-btn" onclick="deleteCard('${colId}', ${index})">&times;</button>
+                    `;
+                    card.addEventListener('dragstart', (e) => {
+                        e.dataTransfer.setData("text/plain", JSON.stringify({colId, index}));
+                    });
+                    container.appendChild(card);
+                });
+            });
+            updateCounts();
+        }
+
+        function addCard(colId) {
+            const nameInput = document.getElementById(`input-${colId}-name`);
+            const roleInput = document.getElementById(`input-${colId}-role`);
+            if (nameInput.value.trim() === "") return;
+
+            boardData[colId].push({ name: nameInput.value, role: roleInput.value || "Candidat" });
+            nameInput.value = ''; roleInput.value = '';
+            
+            saveDataToCloud(); // <-- On sauvegarde dans le Cloud
+        }
+
+        function deleteCard(colId, index) {
+            if(confirm("Supprimer ?")) {
+                boardData[colId].splice(index, 1);
+                saveDataToCloud(); // <-- On sauvegarde dans le Cloud
+            }
+        }
+
+        function updateCounts() {
+            document.getElementById('count-screening').innerText = (boardData.screening || []).length;
+            document.getElementById('count-playoffs').innerText = (boardData.playoffs || []).length;
+            document.getElementById('count-offer').innerText = (boardData.offer || []).length;
+        }
+
+        function allowDrop(ev) { ev.preventDefault(); }
+
+        function drop(ev) {
+            ev.preventDefault();
+            let target = ev.target;
+            while (!target.classList.contains('task-list')) {
+                target = target.parentElement;
+                if(!target) return;
+            }
+            const targetColId = target.id;
+            const data = JSON.parse(ev.dataTransfer.getData("text/plain"));
+            const sourceColId = data.colId;
+            const index = data.index;
+
+            if (sourceColId === targetColId) return;
+
+            const candidate = boardData[sourceColId][index];
+            boardData[sourceColId].splice(index, 1);
+            boardData[targetColId].push(candidate);
+
+            saveDataToCloud(); // <-- On sauvegarde dans le Cloud
+        }
+    </script>
+</body>
+</html>
