@@ -1,0 +1,53 @@
+/* style.css */
+body {
+    font-family: 'Inter', sans-serif;
+}
+
+/* Style des cartes candidats */
+.candidate-card {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 10px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    cursor: grab;
+    transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.candidate-card:hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    border-color: #cbd5e1;
+}
+
+.candidate-card:active {
+    cursor: grabbing;
+    transform: scale(0.98);
+}
+
+/* Badges de statut (tags colorés) */
+.badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-top: 6px;
+}
+
+.badge-todo { background-color: #fee2e2; color: #991b1b; } /* Rouge clair */
+.badge-doing { background-color: #ffedd5; color: #9a3412; } /* Orange */
+.badge-done { background-color: #dcfce7; color: #166534; } /* Vert */
+
+/* Pour masquer les scrollbars moches mais garder le scroll */
+::-webkit-scrollbar {
+    width: 6px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+}
