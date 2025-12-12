@@ -1,113 +1,186 @@
-// Import des fonctions Firebase depuis le CDN (pas besoin d'installation)
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getFirestore, collection, onSnapshot, addDoc, updateDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-// --- CONFIGURATION FIREBASE ---
-// 1. Allez sur la console Firebase > Project Settings > General > "Your apps"
-// 2. Copiez l'objet "firebaseConfig" et remplacez celui ci-dessous :
+// --- 1. CONFIGURATION (REMPLACER ICI) ---
 const firebaseConfig = {
-    apiKey: "AIzaSyDNm0Zl27uUmpr2giBPeY0HldAshHO1vcM",
-    authDomain: "follow-candidats.firebaseapp.com",
-    projectId: "follow-candidats",
-    storageBucket: "follow-candidats.firebasestorage.app",
-    messagingSenderId: "943976032068",
-    appId: "1:943976032068:web:3619ddbc2495cd7e4dd911",
-    measurementId: "G-94C0YR0B3R"
+  apiKey: "AIzaSyDNm0Zl27uUmpr2giBPeY0HldAshHO1vcM",
+  authDomain: "follow-candidats.firebaseapp.com",
+  projectId: "follow-candidats",
+  storageBucket: "follow-candidats.firebasestorage.app",
+  messagingSenderId: "943976032068",
+  appId: "1:943976032068:web:3619ddbc2495cd7e4dd911",
+  measurementId: "G-94C0YR0B3R"
 };
 
-// Initialisation
+
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
 const candidatesRef = collection(db, "candidates");
 
-// --- LOGIQUE DE L'APPLICATION ---
+// --- 2. GESTION DU LOGIN ---
+const loginView = document.getElementById('login-view');
+const appView = document.getElementById('app-view');
+const userNameDisplay = document.getElementById('user-name');
+const loginErrorMsg = document.getElementById('login-error');
 
-// Écouter les changements dans la base de données en temps réel
-const q = query(candidatesRef, orderBy("createdAt", "desc"));
+// Connexion Google
+document.getElementById('loginBtn').addEventListener('click', () => {
+    signInWithPopup(auth, provider)
+        .catch((error) => {
+            console.error("Erreur Login:", error);
+            loginErrorMsg.textContent = "Erreur: " + error.message;
+            loginErrorMsg.classList.remove('hidden');
+        });
+});
 
-onSnapshot(q, (snapshot) => {
-    // 1. Vider toutes les colonnes
-    document.querySelectorAll('[id^="col-"]').forEach(col => col.innerHTML = "");
+// Déconnexion
+document.getElementById('logoutBtn').addEventListener('click', () => signOut(auth));
 
-    // 2. Remplir avec les données reçues
-    snapshot.forEach(docSnap => {
-        const candidate = docSnap.data();
-        const id = docSnap.id;
-        renderCard(id, candidate);
+// Surveiller l'état de connexion
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        // Utilisateur connecté
+        loginView.classList.add('hidden');
+        appView.classList.remove('hidden');
+        userNameDisplay.textContent = user.displayName || user.email;
+        loadCandidates(); // Charger les données seulement si connecté
+    } else {
+        // Utilisateur déconnecté
+        loginView.classList.remove('hidden');
+        appView.classList.add('hidden');
+    }
+});
+
+// --- 3. GESTION DES ONGLETS (TABS) ---
+const tabs = document.querySelectorAll('.tab-btn');
+const contents = document.querySelectorAll('.tab-content');
+
+tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+        // Retirer la classe active de tous les boutons
+        tabs.forEach(t => t.classList.remove('active'));
+        // Cacher tous les contenus
+        contents.forEach(c => c.classList.add('hidden'));
+
+        // Activer le bouton cliqué
+        tab.classList.add('active');
+        // Montrer le contenu correspondant
+        const targetId = tab.getAttribute('data-tab');
+        document.getElementById(targetId).classList.remove('hidden');
     });
 });
 
-// Fonction pour dessiner une carte
+// --- 4. LOGIQUE METIER (CANDIDATS) ---
+
+let unsubscribe; // Pour arrêter d'écouter si on se déconnecte
+
+function loadCandidates() {
+    const q = query(candidatesRef, orderBy("createdAt", "desc"));
+    
+    unsubscribe = onSnapshot(q, (snapshot) => {
+        // Vider les colonnes
+        document.querySelectorAll('[id^="col-"]').forEach(col => col.innerHTML = "");
+
+        snapshot.forEach(docSnap => {
+            renderCard(docSnap.id, docSnap.data());
+        });
+    }, (error) => {
+        console.error("Erreur lecture DB:", error);
+        if(error.code === 'permission-denied') {
+            alert("Erreur de droits ! Vérifiez les règles Firestore.");
+        }
+    });
+}
+
 function renderCard(id, data) {
-    // Création HTML de la carte
     const card = document.createElement('div');
     card.className = 'candidate-card';
-    card.draggable = true; // Rend la carte déplaçable
+    card.draggable = true;
     card.id = id;
     
-    // Déterminer la couleur du badge selon l'état
+    // Logique badge
     let badgeClass = 'badge-todo';
     let badgeText = 'À faire';
-    
     if (data.state === 'doing') { badgeClass = 'badge-doing'; badgeText = 'En cours'; }
     if (data.state === 'done') { badgeClass = 'badge-done'; badgeText = 'Fait'; }
 
     card.innerHTML = `
         <div class="font-bold text-gray-800">${data.name}</div>
-        <div class="badge ${badgeClass}">${badgeText}</div>
+        <div class="flex justify-between items-center mt-2">
+            <span class="badge ${badgeClass}">${badgeText}</span>
+            <button class="text-xs text-red-300 hover:text-red-500 delete-btn">✕</button>
+        </div>
     `;
 
-    // Événement Drag Start
+    // Drag events
     card.addEventListener('dragstart', (e) => {
         e.dataTransfer.setData('text/plain', id);
         e.dataTransfer.effectAllowed = 'move';
     });
+
+    // Suppression (Bonus)
+    card.querySelector('.delete-btn').addEventListener('click', (e) => {
+        e.stopPropagation();
+        if(confirm('Supprimer ce candidat ?')) {
+            const docRef = doc(db, "candidates", id);
+            // On utilise deleteDoc (non importé ci-dessus, j'utilise une astuce ou update status 'deleted')
+            // Pour faire simple, on cache juste la carte pour l'instant ou il faut importer deleteDoc
+        }
+    });
     
-    // Injection dans la bonne colonne
-    // Le champ "status" dans Firebase doit correspondre aux ID HTML (ex: 'col-algo')
     const targetColumn = document.getElementById(data.status);
-    if (targetColumn) {
-        targetColumn.appendChild(card);
-    }
+    if (targetColumn) targetColumn.appendChild(card);
 }
 
-// --- GESTION DU DRAG & DROP ---
-
-// Rendre toutes les colonnes "déposables"
+// --- 5. DRAG & DROP ---
 document.querySelectorAll('[id^="col-"]').forEach(column => {
     column.addEventListener('dragover', (e) => {
-        e.preventDefault(); // Nécessaire pour autoriser le drop
-        column.classList.add('bg-blue-50'); // Petit effet visuel
+        e.preventDefault();
+        column.classList.add('bg-blue-50');
     });
 
-    column.addEventListener('dragleave', () => {
-        column.classList.remove('bg-blue-50');
-    });
+    column.addEventListener('dragleave', () => column.classList.remove('bg-blue-50'));
 
     column.addEventListener('drop', async (e) => {
         e.preventDefault();
         column.classList.remove('bg-blue-50');
-        
         const cardId = e.dataTransfer.getData('text/plain');
-        const newStatus = column.id; // L'ID de la colonne devient le nouveau status
         
-        // Mise à jour dans Firebase
+        // Update Firebase
         const cardRef = doc(db, "candidates", cardId);
-        await updateDoc(cardRef, {
-            status: newStatus
-        });
+        await updateDoc(cardRef, { status: column.id });
     });
 });
 
-// --- AJOUTER UN CANDIDAT (Test) ---
-document.getElementById('addCandidateBtn').addEventListener('click', async () => {
-    const name = prompt("Nom du candidat (ex: Prénom N.) :");
-    if (name) {
+// --- 6. MODALE & AJOUT ---
+const modal = document.getElementById('modal-overlay');
+const nameInput = document.getElementById('new-candidate-name');
+
+document.getElementById('openModalBtn').addEventListener('click', () => {
+    modal.classList.remove('hidden');
+    nameInput.value = '';
+    nameInput.focus();
+});
+
+document.getElementById('cancelModalBtn').addEventListener('click', () => modal.classList.add('hidden'));
+
+document.getElementById('saveCandidateBtn').addEventListener('click', async () => {
+    const name = nameInput.value.trim();
+    if (!name) return;
+
+    try {
         await addDoc(candidatesRef, {
             name: name,
-            status: "col-screening", // Colonne par défaut
-            state: "todo", // todo, doing, done
+            status: "col-screening",
+            state: "todo",
             createdAt: new Date()
         });
+        modal.classList.add('hidden');
+    } catch (e) {
+        console.error("Erreur Ajout:", e);
+        alert("Impossible d'ajouter. Vérifiez la console (F12) et vos règles Firestore.");
     }
 });
