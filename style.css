@@ -1,9 +1,7 @@
 /* style.css */
-body {
-    font-family: 'Inter', sans-serif;
-}
+body { font-family: 'Inter', sans-serif; }
 
-/* Style des cartes candidats */
+/* Style des cartes */
 .candidate-card {
     background: white;
     border: 1px solid #e2e8f0;
@@ -12,42 +10,50 @@ body {
     margin-bottom: 10px;
     box-shadow: 0 1px 2px rgba(0,0,0,0.05);
     cursor: grab;
-    transition: transform 0.1s, box-shadow 0.1s;
+    transition: all 0.2s;
+    position: relative;
 }
-
 .candidate-card:hover {
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    border-color: #cbd5e1;
+    border-color: #94a3b8;
+    transform: translateY(-1px);
 }
+.candidate-card:active { cursor: grabbing; }
 
-.candidate-card:active {
-    cursor: grabbing;
-    transform: scale(0.98);
-}
-
-/* Badges de statut (tags colorés) */
+/* Badges */
 .badge {
     display: inline-block;
     padding: 2px 8px;
     border-radius: 4px;
     font-size: 10px;
-    font-weight: 600;
+    font-weight: 700;
     text-transform: uppercase;
     margin-top: 6px;
 }
+.badge-todo { background-color: #fee2e2; color: #991b1b; }
+.badge-doing { background-color: #ffedd5; color: #9a3412; }
+.badge-done { background-color: #dcfce7; color: #166534; }
 
-.badge-todo { background-color: #fee2e2; color: #991b1b; } /* Rouge clair */
-.badge-doing { background-color: #ffedd5; color: #9a3412; } /* Orange */
-.badge-done { background-color: #dcfce7; color: #166534; } /* Vert */
+/* Navigation Tabs */
+.tab-btn {
+    padding: 6px 16px;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #64748b;
+    transition: all 0.2s;
+}
+.tab-btn:hover { color: #0f172a; background: #e2e8f0; }
+.tab-btn.active {
+    background: white;
+    color: #0f172a;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
 
-/* Pour masquer les scrollbars moches mais garder le scroll */
-::-webkit-scrollbar {
-    width: 6px;
-}
-::-webkit-scrollbar-track {
-    background: transparent;
-}
-::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 3px;
-}
+/* Scrollbar clean */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+
+/* Utilitaires */
+.hidden { display: none !important; }
