@@ -2,97 +2,95 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SFEIR Board - Recrutement</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>SFEIR Board</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="bg-gray-50 text-slate-800 font-inter h-screen flex flex-col overflow-hidden">
 
-    <div id="login-view" class="fixed inset-0 bg-gray-900 z-50 flex flex-col items-center justify-center text-white">
+    <div id="login-view" class="fixed inset-0 bg-gray-900 z-50 flex flex-col items-center justify-center text-white px-4">
         <h1 class="text-4xl font-bold mb-2">SFEIR <span class="text-blue-500">Board</span></h1>
-        <p class="text-gray-400 mb-8">Suivi candidats Vibe Coding</p>
-        <button id="loginBtn" class="bg-white text-gray-900 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition flex items-center gap-2">
+        <button id="loginBtn" class="bg-white text-gray-900 px-6 py-3 rounded-lg font-semibold w-full max-w-xs mt-8 flex justify-center items-center gap-2">
             <svg class="w-5 h-5" viewBox="0 0 24 24"><path fill="currentColor" d="M12.545,10.239v3.821h5.445c-0.712,2.315-2.647,3.972-5.445,3.972c-3.332,0-6.033-2.701-6.033-6.032s2.701-6.032,6.033-6.032c1.498,0,2.866,0.549,3.921,1.453l2.814-2.814C17.503,2.988,15.139,2,12.545,2C7.021,2,2.543,6.477,2.543,12s4.478,10,10.002,10c8.396,0,10.249-7.85,9.426-11.748L12.545,10.239z"/></svg>
-            Se connecter avec Google
+            Connexion Google
         </button>
         <p id="login-error" class="text-red-400 mt-4 text-sm hidden"></p>
     </div>
 
     <div id="app-view" class="flex flex-col h-full hidden">
         
-        <header class="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center shadow-sm">
-            <div class="flex items-center gap-6">
-                <h1 class="text-xl font-bold text-gray-800 tracking-tight">SFEIR <span class="text-blue-600">Board</span></h1>
-                
-                <nav class="flex bg-gray-100 p-1 rounded-lg">
-                    <button class="tab-btn active" data-tab="tab-screening">Screening</button>
-                    <button class="tab-btn" data-tab="tab-tests">Tests Techniques</button>
-                    <button class="tab-btn" data-tab="tab-offre">Offre</button>
+        <header class="bg-white border-b border-gray-200 p-4 flex flex-col md:flex-row justify-between items-center shadow-sm gap-4">
+            <div class="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
+                <h1 class="text-xl font-bold text-gray-800">SFEIR <span class="text-blue-600">Board</span></h1>
+                <nav class="flex bg-gray-100 p-1 rounded-lg w-full md:w-auto overflow-x-auto">
+                    <button class="tab-btn active flex-1 md:flex-none whitespace-nowrap" data-tab="tab-screening">Screening</button>
+                    <button class="tab-btn flex-1 md:flex-none whitespace-nowrap" data-tab="tab-tests">Tests Tech</button>
+                    <button class="tab-btn flex-1 md:flex-none whitespace-nowrap" data-tab="tab-offre">Offre</button>
                 </nav>
             </div>
 
-            <div class="flex items-center gap-4">
-                <span id="user-name" class="text-sm font-semibold text-gray-500">Recruteur</span>
-                <button id="openModalBtn" class="bg-black text-white px-4 py-2 rounded-lg text-sm hover:bg-gray-800 transition">
-                    + Nouveau Candidat
-                </button>
-                <button id="logoutBtn" class="text-sm text-red-500 hover:underline">Sortir</button>
+            <div class="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end">
+                <span id="user-name" class="text-sm font-semibold text-gray-500 truncate max-w-[100px]">User</span>
+                <div class="flex gap-2">
+                    <button id="openModalBtn" class="bg-black text-white px-3 py-2 rounded-lg text-sm hover:bg-gray-800 transition whitespace-nowrap">
+                        + Candidat
+                    </button>
+                    <button id="logoutBtn" class="text-sm text-red-500 hover:bg-red-50 px-2 rounded">Sortir</button>
+                </div>
             </div>
         </header>
 
-        <main class="flex-1 overflow-hidden p-6 relative">
+        <main class="flex-1 overflow-y-auto md:overflow-hidden p-4 bg-gray-50 relative">
             
             <div id="tab-screening" class="tab-content h-full">
-                <div class="kanban-column w-1/3 h-full flex flex-col mx-auto">
-                    <h2 class="font-semibold mb-4 text-center text-lg">Screening & Qualification</h2>
-                    <div id="col-screening" class="bg-white rounded-xl border-2 border-dashed border-gray-300 p-3 flex-1 overflow-y-auto min-h-0">
-                        </div>
+                <div class="kanban-column w-full md:w-1/3 h-full flex flex-col mx-auto">
+                    <h2 class="font-semibold mb-2 text-center text-lg sticky top-0 bg-gray-50 py-2 z-10">Screening</h2>
+                    <div id="col-screening" class="bg-white rounded-xl border-2 border-dashed border-gray-300 p-3 min-h-[200px] md:h-full md:overflow-y-auto"></div>
                 </div>
             </div>
 
             <div id="tab-tests" class="tab-content h-full hidden">
-                <div class="flex gap-6 h-full">
-                    <div class="flex-1 flex flex-col h-full">
+                <div class="flex flex-col md:flex-row gap-4 h-auto md:h-full">
+                    <div class="flex-1 flex flex-col min-h-[250px] md:h-full">
                         <div class="bg-white rounded-xl border border-gray-200 p-3 flex flex-col h-full shadow-sm">
-                            <span class="text-xs font-bold text-gray-400 uppercase mb-2 border-b pb-2">Algo</span>
-                            <div id="col-algo" class="flex-1 overflow-y-auto"></div>
+                            <span class="text-xs font-bold text-gray-400 uppercase mb-2 border-b pb-2 sticky top-0 bg-white z-10">Algo</span>
+                            <div id="col-algo" class="flex-1 md:overflow-y-auto"></div>
                         </div>
                     </div>
-                    <div class="flex-1 flex flex-col h-full">
+                    <div class="flex-1 flex flex-col min-h-[250px] md:h-full">
                         <div class="bg-white rounded-xl border border-gray-200 p-3 flex flex-col h-full shadow-sm">
-                            <span class="text-xs font-bold text-gray-400 uppercase mb-2 border-b pb-2">L&F</span>
-                            <div id="col-laf" class="flex-1 overflow-y-auto"></div>
+                            <span class="text-xs font-bold text-gray-400 uppercase mb-2 border-b pb-2 sticky top-0 bg-white z-10">L&F</span>
+                            <div id="col-laf" class="flex-1 md:overflow-y-auto"></div>
                         </div>
                     </div>
-                    <div class="flex-1 flex flex-col h-full">
+                    <div class="flex-1 flex flex-col min-h-[250px] md:h-full">
                         <div class="bg-white rounded-xl border border-gray-200 p-3 flex flex-col h-full shadow-sm">
-                            <span class="text-xs font-bold text-gray-400 uppercase mb-2 border-b pb-2">Retour Tests</span>
-                            <div id="col-retour-tech" class="flex-1 overflow-y-auto"></div>
+                            <span class="text-xs font-bold text-gray-400 uppercase mb-2 border-b pb-2 sticky top-0 bg-white z-10">Retour Tests</span>
+                            <div id="col-retour-tech" class="flex-1 md:overflow-y-auto"></div>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div id="tab-offre" class="tab-content h-full hidden">
-                <div class="flex gap-6 h-full">
-                    <div class="flex-1 flex flex-col h-full">
+                <div class="flex flex-col md:flex-row gap-4 h-auto md:h-full">
+                    <div class="flex-1 flex flex-col min-h-[250px] md:h-full">
                         <div class="bg-white rounded-xl border border-gray-200 p-3 flex flex-col h-full shadow-sm">
-                            <span class="text-xs font-bold text-gray-400 uppercase mb-2 border-b pb-2">Commerce</span>
-                            <div id="col-commerce" class="flex-1 overflow-y-auto"></div>
+                            <span class="text-xs font-bold text-gray-400 uppercase mb-2 border-b pb-2 sticky top-0 bg-white z-10">Commerce</span>
+                            <div id="col-commerce" class="flex-1 md:overflow-y-auto"></div>
                         </div>
                     </div>
-                    <div class="flex-1 flex flex-col h-full">
+                    <div class="flex-1 flex flex-col min-h-[250px] md:h-full">
                         <div class="bg-white rounded-xl border border-gray-200 p-3 flex flex-col h-full shadow-sm">
-                            <span class="text-xs font-bold text-gray-400 uppercase mb-2 border-b pb-2">Reconfirmer</span>
-                            <div id="col-reconfirmer" class="flex-1 overflow-y-auto"></div>
+                            <span class="text-xs font-bold text-gray-400 uppercase mb-2 border-b pb-2 sticky top-0 bg-white z-10">Reconfirmer</span>
+                            <div id="col-reconfirmer" class="flex-1 md:overflow-y-auto"></div>
                         </div>
                     </div>
-                    <div class="flex-1 flex flex-col h-full">
+                    <div class="flex-1 flex flex-col min-h-[250px] md:h-full">
                         <div class="bg-white rounded-xl border border-gray-200 p-3 flex flex-col h-full shadow-sm">
-                            <span class="text-xs font-bold text-gray-400 uppercase mb-2 border-b pb-2">Propale</span>
-                            <div id="col-propale" class="flex-1 overflow-y-auto"></div>
+                            <span class="text-xs font-bold text-gray-400 uppercase mb-2 border-b pb-2 sticky top-0 bg-white z-10">Propale</span>
+                            <div id="col-propale" class="flex-1 md:overflow-y-auto"></div>
                         </div>
                     </div>
                 </div>
@@ -101,14 +99,13 @@
         </main>
     </div>
 
-    <div id="modal-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
-        <div class="bg-white rounded-xl p-6 w-96 shadow-2xl transform transition-all scale-100">
+    <div id="modal-overlay" class="fixed inset-0 bg-black bg-opacity-60 z-[60] hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl p-6 w-full max-w-sm shadow-2xl">
             <h2 class="text-lg font-bold mb-4">Ajouter un candidat</h2>
-            <input type="text" id="new-candidate-name" placeholder="Nom Prénom" class="w-full border border-gray-300 rounded-lg p-2 mb-4 focus:ring-2 focus:ring-blue-500 outline-none">
-            
+            <input type="text" id="new-candidate-name" placeholder="Nom Prénom" class="w-full border border-gray-300 rounded-lg p-3 mb-4 focus:ring-2 focus:ring-blue-500 outline-none text-base">
             <div class="flex justify-end gap-2">
-                <button id="cancelModalBtn" class="text-gray-500 hover:text-gray-700 px-3 py-2">Annuler</button>
-                <button id="saveCandidateBtn" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Enregistrer</button>
+                <button id="cancelModalBtn" class="text-gray-500 hover:bg-gray-100 px-4 py-2 rounded-lg">Annuler</button>
+                <button id="saveCandidateBtn" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 font-medium">Enregistrer</button>
             </div>
         </div>
     </div>
